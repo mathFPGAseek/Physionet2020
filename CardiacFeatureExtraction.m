@@ -11,7 +11,7 @@
 %--------------------------------------------------------------------
 classdef CardiacFeatureExtraction < handle
     properties
-        rawData = [];
+        rawData = []
         sampFreq
         lengthFFT
         leads
@@ -20,12 +20,17 @@ classdef CardiacFeatureExtraction < handle
         X  =  []
         f  =  []
         
-        
+        threshold 
+        ca = []
+        cd = []
+        abs_ca = []
+        abs_cd = []
+               
     end
     
     methods
         
-        function obj = CardiacFeatureExtraction(rawData,sampFreq)
+        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold)
             
             obj.rawData   = rawData;
             obj.sampFreq  = sampFreq; 
@@ -36,6 +41,13 @@ classdef CardiacFeatureExtraction < handle
             obj.P1        = [];
             obj.P2        = [];
             obj.f         = [];
+            
+            % wavelet properties
+            obj.threshold = threshold;
+            obj.ca        = [];
+            obj.cd        = [];
+            obj.abs_ca    = [];
+            obj.abs_cd    = [];
             
             if nargin == 3
                 
@@ -66,6 +78,12 @@ classdef CardiacFeatureExtraction < handle
         end
         
         function obj = WaveletDenoising(obj)
+            
+            
+            %for j = 1: obj.leads
+            %    [obj.ca,obj.cd] = dwt(obj.P1(j,:),'dbl','mode','sym');
+            %    obj.abs_cd = abs(obj.cd);
+            %    for k = 1: 
             
         end
         
