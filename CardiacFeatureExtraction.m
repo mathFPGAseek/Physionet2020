@@ -30,6 +30,8 @@ classdef CardiacFeatureExtraction < handle
         denoised_wavelet = []
         num_of_coeffs    = []
         abs_cd_size
+        min_num_of_coeffs
+        denoised_wavelets_min = []
                
     end
     
@@ -58,6 +60,8 @@ classdef CardiacFeatureExtraction < handle
             obj.denoised_wavelet = [];
             obj.num_of_coeffs    = [];
             obj.abs_cd_size = 0;
+            obj.min_num_of_coeffs = 0;
+            obj.denoised_wavelets_min = [];
             
             if nargin == 3
                 
@@ -106,8 +110,11 @@ classdef CardiacFeatureExtraction < handle
                 obj.denoised_wavelet(j,:) = obj.cd_thrsh;
                 obj.num_of_coeffs(j) = nnz(obj.cd_thrsh);      
                 
-            end
-            
+            end           
+            obj.min_num_of_coeffs = min(obj.num_of_coeffs);
+            %for m = 1: obj.leads
+                obj.denoised_wavelets_min = maxk(obj.denoised_wavelet,obj.min_num_of_coeffs,2); 
+            %end
         end
         
         function obj = IndependentComponentAnalysis(obj)
