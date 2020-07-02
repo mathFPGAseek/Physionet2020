@@ -25,6 +25,11 @@ classdef CardiacFeatureExtraction < handle
         cd = []
         abs_ca = []
         abs_cd = []
+        P1_size
+        cd_thrsh = []
+        denoised_wavelet = []
+        num_of_coeffs    = []
+        abs_cd_size
                
     end
     
@@ -48,6 +53,11 @@ classdef CardiacFeatureExtraction < handle
             obj.cd        = [];
             obj.abs_ca    = [];
             obj.abs_cd    = [];
+            obj.P1_size   = 0;
+            obj.cd_thrsh  = [];
+            obj.denoised_wavelet = [];
+            obj.num_of_coeffs    = [];
+            obj.abs_cd_size = 0;
             
             if nargin == 3
                 
@@ -58,6 +68,7 @@ classdef CardiacFeatureExtraction < handle
         function obj = start(obj)
             
             obj.BaselineFiltering();
+            obj.WaveletDenoising();
             
         end
         
@@ -79,11 +90,23 @@ classdef CardiacFeatureExtraction < handle
         
         function obj = WaveletDenoising(obj)
             
-            
-            %for j = 1: obj.leads
-            %    [obj.ca,obj.cd] = dwt(obj.P1(j,:),'dbl','mode','sym');
-            %    obj.abs_cd = abs(obj.cd);
-            %    for k = 1: 
+            obj.P1_size = size(obj.P1,2);
+            for j = 1: obj.leads
+                [obj.ca,obj.cd] = dwt(obj.P1(j,:),'db1','mode','sym');
+                obj.abs_cd      = abs(obj.cd);
+                obj.abs_cd_size = size(obj.abs_cd,2);
+                obj.cd_thrsh    = zeros(1,obj.abs_cd_size);
+                for k = 1:obj.abs_cd_size 
+                    if( obj.abs_cd(k) <= obj.threshold)
+                        obj.cd_thrsh(k) = 0;
+                    else
+                        obj.cd_thrsh(k) = obj.abs_cd(k);
+                    end
+                end
+                obj.denoised_wavelet(j,:) = obj.cd_thrsh;
+                obj.num_of_coeffs(j) = nnz(obj.cd_thrsh);      
+                
+            end
             
         end
         

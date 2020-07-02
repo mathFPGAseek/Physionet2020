@@ -6,7 +6,7 @@
 % Load a Matleab file for a patient
 rawData = val;
 Fs = 500;
-threshold = 3;
+threshold = .5;
 g = CardiacFeatureExtraction(rawData,Fs,threshold);
 
 
