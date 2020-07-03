@@ -3,7 +3,7 @@
 % Project: Physionet Challenge 2020
 % Student: rbd
 % initial date: 6/26/20
-% file : CardiacFeatureExtraction.m 
+% file : CardiacFeatureExtraction_Class.m 
 %--------------------------------------------------------------------
 
 
