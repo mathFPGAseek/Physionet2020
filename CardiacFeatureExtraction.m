@@ -1,5 +1,6 @@
 %--------------------------------------------------------------------
 % University: University of North Dakota
+% Project: Physionet Challenge 2020
 % Student: rbd
 % initial date: 6/26/20
 % file : CardiacFeatureExtraction.m 
@@ -32,12 +33,17 @@ classdef CardiacFeatureExtraction < handle
         abs_cd_size
         min_num_of_coeffs
         denoised_wavelets_min = []
-               
+        
+        features
+        iterationLimit
+        rica_extract = []
+        sparse_transform = []
+                
     end
     
     methods
         
-        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold)
+        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold,features,iterationLimit)
             
             obj.rawData   = rawData;
             obj.sampFreq  = sampFreq; 
@@ -63,6 +69,13 @@ classdef CardiacFeatureExtraction < handle
             obj.min_num_of_coeffs = 0;
             obj.denoised_wavelets_min = [];
             
+            % Rica properties
+            
+            obj.features = features;
+            obj.iterationLimit = iterationLimit;
+            obj.rica_extract = [];
+            obj.sparse_transform     = [];
+            
             if nargin == 3
                 
             end
@@ -73,6 +86,7 @@ classdef CardiacFeatureExtraction < handle
             
             obj.BaselineFiltering();
             obj.WaveletDenoising();
+            obj.IndependentComponentAnalysis();
             
         end
         
@@ -88,7 +102,7 @@ classdef CardiacFeatureExtraction < handle
             obj.P1(i,:)         = obj.P2(i,1:obj.lengthFFT/2 + 1);           
            end
            
-           % ??? Add some filtering
+           %very Rough guess of 1 hz ; get rid of first 15 bins
            
         end
         
@@ -112,12 +126,16 @@ classdef CardiacFeatureExtraction < handle
                 
             end           
             obj.min_num_of_coeffs = min(obj.num_of_coeffs);
-            %for m = 1: obj.leads
-                obj.denoised_wavelets_min = maxk(obj.denoised_wavelet,obj.min_num_of_coeffs,2); 
-            %end
+      
+            obj.denoised_wavelets_min = maxk(obj.denoised_wavelet,obj.min_num_of_coeffs,2); 
+     
         end
         
         function obj = IndependentComponentAnalysis(obj)
+            
+            obj.rica_extract = rica(obj.denoised_wavelets_min,obj.features, 'IterationLimit',obj.iterationLimit);
+            obj.sparse_transform    = transform(obj.rica_extract,obj.denoised_wavelets_min(1:5,:));
+            
             
         end
         
