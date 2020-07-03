@@ -20,6 +20,11 @@ classdef CardiacFeatureExtraction < handle
         P2 =  []
         X  =  []
         f  =  []
+        frquency_bin_width
+        filter_rejection_in_hz
+        rejection_num_bins
+        P1_rejection_num_bins
+        P1_time_Real_value = []
         
         threshold 
         ca = []
@@ -38,12 +43,13 @@ classdef CardiacFeatureExtraction < handle
         iterationLimit
         rica_extract = []
         sparse_transform = []
+        P1_time = []
                 
     end
     
     methods
         
-        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold,features,iterationLimit)
+        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold,features,iterationLimit,filter_rejection_in_hz)
             
             obj.rawData   = rawData;
             obj.sampFreq  = sampFreq; 
@@ -54,6 +60,12 @@ classdef CardiacFeatureExtraction < handle
             obj.P1        = [];
             obj.P2        = [];
             obj.f         = [];
+            obj.P1_time   = [];
+            obj.frquency_bin_width = 0;
+            obj.filter_rejection_in_hz = filter_rejection_in_hz;
+            obj.rejection_num_bins = 0;
+            obj.P1_rejection_num_bins = 0;
+            obj.P1_time_Real_value = [];
             
             % wavelet properties
             obj.threshold = threshold;
@@ -102,7 +114,16 @@ classdef CardiacFeatureExtraction < handle
             obj.P1(i,:)         = obj.P2(i,1:obj.lengthFFT/2 + 1);           
            end
            
-           %very Rough guess of 1 hz ; get rid of first 15 bins
+           %Estimate of filter bins
+           obj.lengthFFT/2; % pi- Nyquist sampling in bins
+           obj.sampFreq/2;  % Nyquist in frequency
+           obj.frquency_bin_width = (obj.sampFreq/2)/(obj.lengthFFT/2);
+           obj.rejection_num_bins = (obj.filter_rejection_in_hz)/(obj.frquency_bin_width);
+           obj.P1_rejection_num_bins = obj.rejection_num_bins * obj.leads;
+           
+           obj.P1(1:obj.P1_rejection_num_bins) = 0;
+           obj.P1_time = ifft(obj.P1); %% Not sure why 1st components are zeo??
+           obj.P1_time_Real_value = abs(obj.P1_time); 
            
         end
         
@@ -110,7 +131,8 @@ classdef CardiacFeatureExtraction < handle
             
             obj.P1_size = size(obj.P1,2);
             for j = 1: obj.leads
-                [obj.ca,obj.cd] = dwt(obj.P1(j,:),'db1','mode','sym');
+                %[obj.ca,obj.cd] = dwt(obj.P1(j,:),'db1','mode','sym');
+                [obj.ca,obj.cd] = dwt(obj.P1_time_Real_value(j,:),'db1','mode','sym');
                 obj.abs_cd      = abs(obj.cd);
                 obj.abs_cd_size = size(obj.abs_cd,2);
                 obj.cd_thrsh    = zeros(1,obj.abs_cd_size);
