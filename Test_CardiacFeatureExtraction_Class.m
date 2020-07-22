@@ -44,7 +44,7 @@ debug = 0;
 % Process all of data
 %-------------------
 input_directory      = '../../Training_WFDB'
-output_directory     = '../../output_class_data2/'
+output_directory     = '../../output_class_data/'
 output_csv_directory = '../../output_class_csv_data'
 matlab_suffix = '.mat'
 csv_suffix    = '.csv'   
