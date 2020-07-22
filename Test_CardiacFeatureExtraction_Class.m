@@ -10,18 +10,19 @@
 
 
 % Load a Matleab file for a patient
-rawData                = val; % Patient
+%%rawData                = val; % Patient
 Fs                     = 500; % For Baseline wandering filtering
 filter_rejection_in_hz = 1; % Filter rejecgtion in Hz
 threshold              = .01;  % Wavelet De-noising
 features               = 50;  % For RICA
 iterationLimit         = 100; % For RICA
-g = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
+%g = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
 
 
 %------------
 % Test Baseline Filter
 %------------
+%{
 g.start;
 figure(1)
 plot(g.f,g.P1(1,:)) 
@@ -38,12 +39,13 @@ ylabel('|P1(f)|')
 % returned features
 extracted_features = g.sparse_transform
 debug = 0;
-
+%}
 %-------------------
 % Process all of data
 %-------------------
 input_directory = '../../Training_WFDB'
-output_directory = '../../output_class_data'
+output_directory = '../../output_class_data/'
+matlab_suffix = '.mat'
 
 i = 0;
     for f = dir(input_directory)'
@@ -74,5 +76,12 @@ i = 0;
         h = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
         h.start;
         extracted_features = h.sparse_transform
+        %tmp_output_file = strcat(output_directory,input_files{i});
+        file_out_tmp=strsplit(input_files{i},'.');
+        tmp_output_file = fullfile(output_directory, file_out_tmp{1});
+        tmp_output_file_2 = strcat(tmp_output_file,matlab_suffix);
+        save(tmp_output_file_2,'extracted_features')
         
  end
+ 
+ debug = 0;
