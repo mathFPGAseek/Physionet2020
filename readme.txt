@@ -13,6 +13,9 @@ Requirements:
 4. Wavelet Toolbox
 
 Instructions:
+0. Create two folders
+	a. ../../Training_WFDB      -> This is from Physionet Website
+	b. ../../output_class_data  -> This is empty
 1. Load patient file( *.mat)
 2. Run file: Test_CardiacfeatureExtraction_Class.m
 3. Observe variable: extracted_features
