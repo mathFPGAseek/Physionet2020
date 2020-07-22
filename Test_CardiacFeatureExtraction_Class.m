@@ -43,14 +43,15 @@ debug = 0;
 %-------------------
 % Process all of data
 %-------------------
-input_directory = '../../Training_WFDB'
-output_directory = '../../output_class_data/'
+input_directory      = '../../Training_WFDB'
+output_directory     = '../../output_class_data2/'
+output_csv_directory = '../../output_class_csv_data'
 matlab_suffix = '.mat'
+csv_suffix    = '.csv'   
 
 i = 0;
     for f = dir(input_directory)'
         if exist(fullfile(input_directory, f.name), 'file') == 2 && f.name(1) ~= '.' && all(f.name(end - 2 : end) == 'mat')
-            %input_files{end + 1} = f.name;
             input_files{i + 1} = f.name;
             i = i + 1;
         end
@@ -76,11 +77,14 @@ i = 0;
         h = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
         h.start;
         extracted_features = h.sparse_transform
-        %tmp_output_file = strcat(output_directory,input_files{i});
         file_out_tmp=strsplit(input_files{i},'.');
+        % Ouput MAT file
         tmp_output_file = fullfile(output_directory, file_out_tmp{1});
         tmp_output_file_2 = strcat(tmp_output_file,matlab_suffix);
         save(tmp_output_file_2,'extracted_features')
+        % Output CSV file
+        tmp_output_csv_file_2 = strcat(tmp_output_file,csv_suffix);
+        csvwrite(tmp_output_csv_file_2,extracted_features)
         
  end
  
