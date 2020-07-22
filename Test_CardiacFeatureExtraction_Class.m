@@ -13,7 +13,7 @@
 rawData                = val; % Patient
 Fs                     = 500; % For Baseline wandering filtering
 filter_rejection_in_hz = 1; % Filter rejecgtion in Hz
-threshold              = .5;  % Wavelet De-noising
+threshold              = .01;  % Wavelet De-noising
 features               = 50;  % For RICA
 iterationLimit         = 100; % For RICA
 g = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);

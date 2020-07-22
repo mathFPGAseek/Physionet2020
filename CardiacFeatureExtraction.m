@@ -37,6 +37,7 @@ classdef CardiacFeatureExtraction < handle
         num_of_coeffs    = []
         abs_cd_size
         min_num_of_coeffs
+        max_num_of_coeffs
         denoised_wavelets_min = []
         
         features
@@ -79,6 +80,7 @@ classdef CardiacFeatureExtraction < handle
             obj.num_of_coeffs    = [];
             obj.abs_cd_size = 0;
             obj.min_num_of_coeffs = 0;
+            obj.max_num_of_coeffs = 0;
             obj.denoised_wavelets_min = [];
             
             % Rica properties
@@ -148,6 +150,7 @@ classdef CardiacFeatureExtraction < handle
                 
             end           
             obj.min_num_of_coeffs = min(obj.num_of_coeffs);
+            obj.max_num_of_coeffs = max(obj.num_of_coeffs);
       
             obj.denoised_wavelets_min = maxk(obj.denoised_wavelet,obj.min_num_of_coeffs,2); 
      
