@@ -159,7 +159,7 @@ classdef CardiacFeatureExtraction < handle
         function obj = IndependentComponentAnalysis(obj)
             
             obj.rica_extract = rica(obj.denoised_wavelets_min,obj.features, 'IterationLimit',obj.iterationLimit);
-            obj.sparse_transform    = transform(obj.rica_extract,obj.denoised_wavelets_min(1:5,:));
+            obj.sparse_transform    = transform(obj.rica_extract,obj.denoised_wavelets_min(1:12,:));
             
             
         end

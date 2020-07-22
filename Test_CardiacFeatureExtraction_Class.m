@@ -38,3 +38,41 @@ ylabel('|P1(f)|')
 % returned features
 extracted_features = g.sparse_transform
 debug = 0;
+
+%-------------------
+% Process all of data
+%-------------------
+input_directory = '../../Training_WFDB'
+output_directory = '../../output_class_data'
+
+i = 0;
+    for f = dir(input_directory)'
+        if exist(fullfile(input_directory, f.name), 'file') == 2 && f.name(1) ~= '.' && all(f.name(end - 2 : end) == 'mat')
+            %input_files{end + 1} = f.name;
+            input_files{i + 1} = f.name;
+            i = i + 1;
+        end
+    end
+    
+ debug = 0;
+ 
+ disp(' Process all files')
+ num_files = length(input_files);
+ for i = 1:num_files
+    disp(['    ', num2str(i), '/', num2str(num_files), '...'])
+    % Load data.
+    file_tmp=strsplit(input_files{i},'.');
+    tmp_input_file = fullfile(input_directory, file_tmp{1});
+    f= load([tmp_input_file '.mat']);
+    try 
+        rawData                = f.val; % Patient
+    catch ex
+        rethrow(ex)
+    end
+    
+        % Load a Matlab file for a patient
+        h = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
+        h.start;
+        extracted_features = h.sparse_transform
+        
+ end
