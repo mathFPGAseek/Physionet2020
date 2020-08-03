@@ -5,7 +5,8 @@
 % initial date: 6/26/20
 % file : CardiacFeatureExtraction_Class.m 
 %--------------------------------------------------------------------
-
+fdaMPath = 'c:/design/misc/PhD_EE/misc/fda/fdaM';
+addpath(fdaMPath)
 
 
 
@@ -18,6 +19,15 @@ features               = 50;  % For RICA
 iterationLimit         = 100; % For RICA
 %g = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
 
+% Variables for Functional Data
+time_units = 1/Fs;
+length = 7500; 
+for t = 1 : length
+    time(t) = time_units + t*time_units;
+end
+time = time';
+time_end = max(time);
+debug = 0;
 
 %------------
 % Test Baseline Filter
@@ -44,7 +54,7 @@ debug = 0;
 % Process all of data
 %-------------------
 input_directory      = '../../Training_WFDB'
-output_directory     = '../../output_class_data/'
+output_directory     = '../../output_class_data_exp_test6/'
 output_csv_directory = '../../output_class_csv_data'
 matlab_suffix = '.mat'
 csv_suffix    = '.csv'   
@@ -60,7 +70,8 @@ i = 0;
  debug = 0;
  
  disp(' Process all files')
- num_files = length(input_files);
+ %num_files = length(input_files);
+ num_files = size(input_files,2);
  for i = 1:num_files
     disp(['    ', num2str(i), '/', num2str(num_files), '...'])
     % Load data.
@@ -73,11 +84,14 @@ i = 0;
         rethrow(ex)
     end
     
-        % Load a Matlab file for a patient
+        % Load a Matlab file for a patient and filter, de-noise and do ICA
         h = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
         h.start;
         extracted_features = h.sparse_transform
         file_out_tmp=strsplit(input_files{i},'.');
+        % Load a Matlab file and do Functional PCA
+        
+        
         % Ouput MAT file
         tmp_output_file = fullfile(output_directory, file_out_tmp{1});
         tmp_output_file_2 = strcat(tmp_output_file,matlab_suffix);

@@ -164,6 +164,10 @@ classdef CardiacFeatureExtraction < handle
             
         end
         
+        %function obj = FunctionalComponentAnalysis(obj)
+        %    obj.bspline_basis = create
+            
+        
     end % methods
     
 end % class
