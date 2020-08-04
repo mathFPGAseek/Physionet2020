@@ -5,7 +5,8 @@
 % initial date: 6/26/20
 % file : CardiacFeatureExtraction_Class.m 
 %--------------------------------------------------------------------
-fdaMPath = 'c:/design/misc/PhD_EE/misc/fda/fdaM';
+%fdaMPath = 'c:/design/misc/PhD_EE/misc/fda/fdaM'; 
+fdaMPath = 'c:/design/PhD/misc/functional_data/fda/fdaM';
 addpath(fdaMPath)
 
 
