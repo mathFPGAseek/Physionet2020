@@ -9,53 +9,30 @@
 fdaMPath = 'c:/design/PhD/misc/functional_data/fda/fdaM';
 addpath(fdaMPath)
 
-
-
-% Load a Matleab file for a patient
-%%rawData                = val; % Patient
+% Variables for Filtering/De-noising/ICA
 Fs                     = 500; % For Baseline wandering filtering
 filter_rejection_in_hz = 1; % Filter rejecgtion in Hz
 threshold              = .01;  % Wavelet De-noising
 features               = 50;  % For RICA
 iterationLimit         = 100; % For RICA
-%g = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
 
 % Variables for Functional Data
-time_units = 1/Fs;
-length = 7500; 
-for t = 1 : length
-    time(t) = time_units + t*time_units;
-end
-time = time';
-time_end = max(time);
-debug = 0;
+%time_units = 1/Fs;                 % Note we can calculate in class
+time_term  = 2;                     % Time in seconds
+%samples = time_term/time_units;    % Note we can calculate in class
+basis_ord = 4;
+basis_diff_oper = 2;
+basis_penalty = 1e-6;
+lamda = 1e-4;
+nharm = 3;
 
-%------------
-% Test Baseline Filter
-%------------
-%{
-g.start;
-figure(1)
-plot(g.f,g.P1(1,:)) 
-title('Single-Sided Amplitude Spectrum of X(t)')
-xlabel('f (Hz)')
-ylabel('|P1(f)|')
+% ??? Make class take 6 vars for FPCA above and complete FPCA method
 
-figure(2)
-plot(g.f,g.P1(2,:)) 
-title('Single-Sided Amplitude Spectrum of X(t)')
-xlabel('f (Hz)')
-ylabel('|P1(f)|')
-
-% returned features
-extracted_features = g.sparse_transform
-debug = 0;
-%}
 %-------------------
 % Process all of data
 %-------------------
 input_directory      = '../../Training_WFDB'
-output_directory     = '../../output_class_data_exp_test6/'
+output_directory     = '../../output_class_data_exp_test7/'
 output_csv_directory = '../../output_class_csv_data'
 matlab_suffix = '.mat'
 csv_suffix    = '.csv'   
