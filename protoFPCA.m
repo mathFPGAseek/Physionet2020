@@ -6,8 +6,6 @@ Fs                     = 500;
 time_units = 1/Fs;
 length = 7500; 
 
-
-
 time_term = 2; % time in seconds
 samples = time_term/time_units;
 
@@ -26,8 +24,6 @@ for t = 1 : samples
     time(t) = time(t) + t*time_units;
 end
 time = time';
-%time_end = max(time);
-%time_end = min( time_end,time_term);
 
 debug = 0;
 
@@ -52,10 +48,10 @@ debug = 0;
 patientfd = smooth_basis(time,data_sub,patientfdPar);
 debug = 0;
 
-subplot(1,1,1)
-plot(patientfd)
-title('First Few Heart Beats')
-debug = 0;
+%subplot(1,1,1)
+%plot(patientfd)
+%title('First Few Heart Beats')
+%debug = 0;
 
 % Do Functional PCA
 patientfdPar  = fdPar(patientBasis,basis_diff_oper,lambda);
@@ -65,6 +61,6 @@ patientpcastr = pca_fd(patientfd,nharm,patientfdPar);
 toc
 debug = 0;
 
-plot_pca_fd(patientpcastr)
+%plot_pca_fd(patientpcastr)
 
 debug = 0;

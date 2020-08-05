@@ -6,6 +6,10 @@
 % file : readme.txt
 %--------------------------------------------------------------------
 
+%--------------------------------------------------------------------
+% Notes for ICA Feature Extraction
+%--------------------------------------------------------------------
+
 Requirements:
 1. Matlab 2020a
 2. DSP System toolbox
@@ -13,16 +17,17 @@ Requirements:
 4. Wavelet Toolbox
 
 Instructions:
-0. Create two folders
-	a. ../../Training_WFDB      -> This is from Physionet Website
-	b. ../../output_class_data  -> This is empty
-1. Load patient file( *.mat)
-2. Run file: Test_CardiacfeatureExtraction_Class.m
-3. Observe variable: extracted_features
+0. Create three folders
+	a. ../../Training_WFDB           -> This is from Physionet Website
+	b. ../../output_ica_class_data  - > This is empty
+	c. ../../output_fpca_class_data  -> This is empty
+1. Run file: Test_CardiacfeatureExtraction_Class.m
+2. Observe variable: extracted_features(ICA)
+3. Observe variable: extracted_features(FPCA)
 
 
 Notes:
-This Class performs:
+This Class performs for ICA:
  A baseline wandering filter on data
  A wavelet de-noising of data
  A independent component analysis of data
@@ -46,3 +51,34 @@ feature value of 50.For the given data I was not able to converge on a
 solution, but Matlab gives you the option of extracting N sparse values.
 So, finally we get a 5x50 array that gives us 5 of the leads with our
 50 features.
+
+%--------------------------------------------------------------------
+% Notes for FPCA Feature Extraction
+%--------------------------------------------------------------------
+Requirements:
+1. Matlab 2020a
+2. DSP System toolbox
+3. Statistics and Machine Learning Toolbox
+4. Wavelet Toolbox
+5. Install FDA lib from Ramsey and install path( Availiable through an FTP site
+/misc/fda/downloads/FDAfuns/Matlab/)
+
+Instructions:
+0. Create three folders
+	a. ../../Training_WFDB            -> This is from Physionet Website
+	b. ../../output_class_ica_data1   -> This is empty
+	b. ../../output_class_fpca_data1  -> This is empty
+
+1. Run file: Test_CardiacfeatureExtraction_Class.m
+2. Observe variable: extracted_features
+3. Observe variable: extracted_features(FPCA)
+
+
+Notes:
+This Class performs for FPCA
+ A FPCA analysis
+
+Theory of Opeartion.
+The order of the polynomial,number of basis , smoothing penalties are set
+for functional data analysis. The class will represent the data after eigenvalue analysis
+as a fucntion that has been dimernsionally reduced.

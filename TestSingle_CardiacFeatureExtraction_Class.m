@@ -9,28 +9,50 @@
 fdaMPath = 'c:/design/PhD/misc/functional_data/fda/fdaM';
 addpath(fdaMPath)
 
-% Variables for Filtering/De-noising/ICA
+
+
+% Load a Matleab file for a patient
+%%rawData                = val; % Patient
 Fs                     = 500; % For Baseline wandering filtering
 filter_rejection_in_hz = 1; % Filter rejecgtion in Hz
 threshold              = .01;  % Wavelet De-noising
 features               = 50;  % For RICA
 iterationLimit         = 100; % For RICA
+%g = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
 
 % Variables for Functional Data
-time_term  = 2;                     % Time in seconds
-basis_ord = 4;
-basis_diff_oper = 2;
-basis_penalty = 1e-6;
-lambda = 1e-4;
-nharm = 3;
+time_units = 1/Fs;
+time_term  = 2;     % Time in seconds
+samples = time_term/time_units;
 
+
+%------------
+% Test Baseline Filter
+%------------
+%{
+g.start;
+figure(1)
+plot(g.f,g.P1(1,:)) 
+title('Single-Sided Amplitude Spectrum of X(t)')
+xlabel('f (Hz)')
+ylabel('|P1(f)|')
+
+figure(2)
+plot(g.f,g.P1(2,:)) 
+title('Single-Sided Amplitude Spectrum of X(t)')
+xlabel('f (Hz)')
+ylabel('|P1(f)|')
+
+% returned features
+extracted_features = g.sparse_transform
+debug = 0;
+%}
 %-------------------
 % Process all of data
 %-------------------
-input_directory           = '../../Training_WFDB'
-output_ica_directory      = '../../output_class_ica_data_1/'
-%output_csv_directory     = '../../output_class_csv_data'
-output_fpca_directory     = '../../output_class_fpca_data_1/'
+input_directory      = '../../Training_WFDB'
+output_directory     = '../../output_class_data_exp_test6/'
+output_csv_directory = '../../output_class_csv_data'
 matlab_suffix = '.mat'
 csv_suffix    = '.csv'   
 
@@ -45,6 +67,7 @@ i = 0;
  debug = 0;
  
  disp(' Process all files')
+ %num_files = length(input_files);
  num_files = size(input_files,2);
  for i = 1:num_files
     disp(['    ', num2str(i), '/', num2str(num_files), '...'])
@@ -59,33 +82,20 @@ i = 0;
     end
     
         % Load a Matlab file for a patient and filter, de-noise and do ICA
-        h = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz,...
-                                     basis_ord,basis_diff_oper,basis_penalty,lambda,nharm,...
-                                     time_term);
+        h = CardiacFeatureExtraction(rawData,Fs,threshold,features,iterationLimit,filter_rejection_in_hz);
         h.start;
         extracted_features = h.sparse_transform
         file_out_tmp=strsplit(input_files{i},'.');
+        % Load a Matlab file and do Functional PCA
         
-        % Retreive Functional PCA
-        fpca_features = h.patientpcastr.harmscr
         
-        % Prepare ICA Outputs
-        tmp_ica_output_file = fullfile(output_ica_directory, file_out_tmp{1});
-        % Ouput MAT file ICA
-        tmp_output_file_2 = strcat(tmp_ica_output_file,matlab_suffix);
+        % Ouput MAT file
+        tmp_output_file = fullfile(output_directory, file_out_tmp{1});
+        tmp_output_file_2 = strcat(tmp_output_file,matlab_suffix);
         save(tmp_output_file_2,'extracted_features')
-        % Output CSV file ICA
-        tmp_output_csv_file_2 = strcat(tmp_ica_output_file,csv_suffix);
+        % Output CSV file
+        tmp_output_csv_file_2 = strcat(tmp_output_file,csv_suffix);
         csvwrite(tmp_output_csv_file_2,extracted_features)
-
-        % Prepare ICA Outputs
-        tmp_fpca_output_file = fullfile(output_fpca_directory, file_out_tmp{1});
-        % Ouput MAT file FPCA
-        tmp_output_file_3 = strcat(tmp_fpca_output_file,matlab_suffix);
-        save(tmp_output_file_3,'fpca_features')
-        % Output CSV file FPCA
-        tmp_output_csv_file_3 = strcat(tmp_fpca_output_file,csv_suffix);
-        csvwrite(tmp_output_csv_file_3,fpca_features)
         
  end
  

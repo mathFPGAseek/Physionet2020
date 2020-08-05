@@ -45,12 +45,32 @@ classdef CardiacFeatureExtraction < handle
         rica_extract = []
         sparse_transform = []
         P1_time = []
+        
+        basis_ord  
+        basis_diff_oper
+        basis_penalty 
+        basis_num
+        lambda     
+        nharm      
+        time 
+        
+        time_units
+        samples
+        time_samples    = []
+        fPCAdata        = []
+        fPCAdata_sub    = []
+        
+        patientBasis    = []
+        patientfdPar    = []
+        patientfd       = []
+        patientpcastr   = []
                 
     end
     
     methods
         
-        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold,features,iterationLimit,filter_rejection_in_hz)
+        function obj = CardiacFeatureExtraction(rawData,sampFreq,threshold,features,iterationLimit,filter_rejection_in_hz,...
+                                                basis_ord,basis_diff_oper,basis_penalty,lambda,nharm,time)
             
             obj.rawData   = rawData;
             obj.sampFreq  = sampFreq; 
@@ -90,6 +110,28 @@ classdef CardiacFeatureExtraction < handle
             obj.rica_extract = [];
             obj.sparse_transform     = [];
             
+            % Functional PCA properties
+            obj.basis_ord       = basis_ord;
+            obj.basis_diff_oper = basis_diff_oper;
+            obj.basis_penalty   = basis_penalty;
+            obj.lambda          = lambda;
+            obj.nharm           = nharm;
+            obj.time            = time;
+            
+            obj.time_units      = 0;
+            obj.samples         = 0;
+            obj.basis_num       = 0;
+            obj.time_samples    = [];
+            obj.fPCAdata        = [];
+            obj.fPCAdata_sub    = [];
+            
+            obj.patientBasis    = [];
+            obj.patientfdPar    = [];
+            obj.patientfd       = [];
+            
+            obj.patientpcastr   = [];
+            
+            
             if nargin == 3
                 
             end
@@ -101,6 +143,7 @@ classdef CardiacFeatureExtraction < handle
             obj.BaselineFiltering();
             obj.WaveletDenoising();
             obj.IndependentComponentAnalysis();
+            obj.FunctionalComponentAnalysis();
             
         end
         
@@ -164,8 +207,31 @@ classdef CardiacFeatureExtraction < handle
             
         end
         
-        %function obj = FunctionalComponentAnalysis(obj)
-        %    obj.bspline_basis = create
+        function obj = FunctionalComponentAnalysis(obj)
+            
+            % Pre-processing for FPCA
+            obj.time_units   = 1/obj.sampFreq;
+            obj.samples      = obj.time/obj.time_units;
+            obj.basis_num    = obj.samples; 
+            obj.time_samples = zeros(1,obj.samples);
+            obj.fPCAdata     = obj.rawData';
+            
+            for m = 1 : obj.samples
+                    obj.fPCAdata_sub(m,:) = obj.fPCAdata(m,:);
+            end
+            
+            for t = 1 :  obj.samples
+                obj.time_samples(t) = obj.time_samples(t) + t*obj.time_units;
+            end
+
+            % smooth data
+            obj.patientBasis  = create_bspline_basis([0 obj.time],obj.basis_num,obj.basis_ord);
+            obj.patientfdPar  = fdPar(obj.patientBasis,obj.basis_diff_oper,obj.basis_penalty);
+            obj.patientfd     = smooth_basis(obj.time_samples,obj.fPCAdata_sub,obj.patientfdPar);
+            obj.patientfdPar  = fdPar(obj.patientBasis,obj.basis_diff_oper,obj.lambda);
+            obj.patientpcastr = pca_fd(obj.patientfd,obj.nharm,obj.patientfdPar);
+        end        
+          
             
         
     end % methods
